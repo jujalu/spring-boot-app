@@ -14,25 +14,15 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "usr_usuario")
-public class Usuario{
+@Table(name = "aut_autorizacao")
+public class Autorizacao{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name= "usr_id")
+    @Column(name= "aut_id")
     private Long id;
 
-    @Column(name= "usr_nome")
+    @Column(name= "aut_nome")
     private String nome;
-
-    @Column(name= "usr_senha")
-    private String senha;
-
-    @ManyToMany(FetchType.EAGER)
-    @JoinTable(name = "uau_usuario_autorizacao",
-        joinColumns = { @JoinColumn(name = "usr_id")},
-        inverseJoinColumns = { @JoinColumn(name = "aut_id") }
-        )
-    private Set<Autorizacao> autorizacoes;
 
     public Long getId(){
         return this.id;
@@ -47,19 +37,5 @@ public class Usuario{
     public void setNome(String nome){
         this.nome = nome;
     }
-
-    public String getSenha(){
-        return this.senha;
-    }
-    public void setSenha(String senha){
-        this.senha = senha;
-    }
- 
- 
-    public Set<Autorizacao> getAutorizacoes(){
-        return this.autorizacoes;
-    }
-    public void SetAutorizacoes(Set<Autorizacao> autorizacoes){
-        this.autorizacoes = autorizacoes;
-    }
+    
 }
