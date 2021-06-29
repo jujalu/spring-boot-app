@@ -48,7 +48,7 @@ class SpringBootAppApplicationTests {
     @Test
     void testaAutorizacao() {
         Usuario usuario = usuarioRepo.findById(1L).get();
-        assertEquals("ROLE ADMIN", usuario.getAutorizacoes().iterator().next().getNome());
+        assertEquals("ROLE_ADMIN", usuario.getAutorizacoes().iterator().next().getNome());
     }
 
     @Test
