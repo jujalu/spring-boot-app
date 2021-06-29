@@ -15,26 +15,30 @@ import br.gov.sp.fatec.springbootapp.entity.Autorizacao;
 import br.gov.sp.fatec.springbootapp.entity.Usuario;
 import br.gov.sp.fatec.springbootapp.repository.AutorizacaoRepository;
 import br.gov.sp.fatec.springbootapp.repository.UsuarioRepository;
+import br.gov.sp.fatec.springbootapp.service.SegurancaService;
 
 @SpringBootTest
 @Transactional
 @Rollback
 class SpringBootAppApplicationTests {
 
-	@Autowired
-	private UsuarioRepository usuarioRepo;
+    @Autowired
+    private UsuarioRepository usuarioRepo;
 
     @Autowired
     private AutorizacaoRepository autRepo;
 
-	@Test
-	void contextLoads() {
-	}
+    @Autowired
+    private SegurancaService segService;
 
 	@Test
+	void contextLoads() {
+    }
+    
+    @Test
     void testaInsercao() {
         Usuario usuario = new Usuario();
-        usuario.setNome("Diego");
+        usuario.setNome("Usuario2");
         usuario.setSenha("SenhaF0rte");
         usuario.setAutorizacoes(new HashSet<Autorizacao>());
         Autorizacao aut = new Autorizacao();
@@ -43,6 +47,20 @@ class SpringBootAppApplicationTests {
         usuario.getAutorizacoes().add(aut);
         usuarioRepo.save(usuario);
         assertNotNull(usuario.getAutorizacoes().iterator().next().getId());
+    }
+
+    @Test
+    void testaInsercaoAutorizacao() {
+        Usuario usuario = new Usuario();
+        usuario.setNome("Usuario2");
+        usuario.setSenha("SenhaF0rte");
+        usuarioRepo.save(usuario);
+        Autorizacao aut = new Autorizacao();
+        aut.setNome("ROLE_USUARIO2");
+        aut.setUsuarios(new HashSet<Usuario>());
+        aut.getUsuarios().add(usuario);
+        autRepo.save(aut);
+        assertNotNull(aut.getUsuarios().iterator().next().getId());
     }
 
     @Test
@@ -55,6 +73,54 @@ class SpringBootAppApplicationTests {
     void testaUsuario() {
         Autorizacao aut = autRepo.findById(1L).get();
         assertEquals("Usuario", aut.getUsuarios().iterator().next().getNome());
-		
     }
+
+    @Test
+    void testaBuscaUsuarioNomeContains() {
+        List<Usuario> usuarios = usuarioRepo.findByNomeContainsIgnoreCase("A");
+        assertFalse(usuarios.isEmpty());
+    }
+
+    @Test
+    void testaBuscaUsuarioNome() {
+        Usuario usuario = usuarioRepo.findByNome("Usuario");
+        assertNotNull(usuario);
+    }
+
+    @Test
+    void testaBuscaUsuarioNomeQuery() {
+        Usuario usuario = usuarioRepo.buscaUsuarioPorNome("Usuario");
+        assertNotNull(usuario);
+    }
+
+    @Test
+    void testaBuscaUsuarioNomeSenha() {
+        Usuario usuario = usuarioRepo.findByNomeAndSenha("Usuario", "SenhaF0rte");
+        assertNotNull(usuario);
+    }
+
+    @Test
+    void testaBuscaUsuarioNomeSenhaQuery() {
+        Usuario usuario = usuarioRepo.buscaUsuarioPorNomeESenha("Usuario", "SenhaF0rte");
+        assertNotNull(usuario);
+    }
+
+    @Test
+    void testaBuscaUsuarioNomeAutorizacao() {
+        List<Usuario> usuarios = usuarioRepo.findByAutorizacoesNome("ROLE_ADMIN");
+        assertFalse(usuarios.isEmpty());
+    }
+
+    @Test
+    void testaBuscaUsuarioNomeAutorizacaoQuery() {
+        List<Usuario> usuarios = usuarioRepo.buscaPorNomeAutorizacao("ROLE_ADMIN");
+        assertFalse(usuarios.isEmpty());
+    }
+
+    @Test
+    void testaServicoCriaUsuario() {
+        Usuario usuario = segService.criarUsuario("normal", "senha123", "ROLE_USUARIO");
+        assertNotNull(usuario);
+    }
+
 }
